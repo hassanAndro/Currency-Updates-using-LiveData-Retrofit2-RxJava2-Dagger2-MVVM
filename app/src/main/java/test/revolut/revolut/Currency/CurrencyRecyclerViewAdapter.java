@@ -1,15 +1,20 @@
 package test.revolut.revolut.Currency;
 
 import android.content.Context;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Currency;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import test.revolut.revolut.Currency.CurrencyModel.Data;
@@ -22,12 +27,14 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
     private ArrayList<Data> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
+    private Context mContext;
 
     // data is passed into the constructor
     CurrencyRecyclerViewAdapter(Context context, Rates mRates) {
         this.mInflater = LayoutInflater.from(context);
         this.mRates = mRates;
         this.mData = mRates.getData();
+        this.mContext = context;
     }
 
     // inflates the row layout from xml when needed
@@ -37,13 +44,14 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
         return new ViewHolder(view);
     }
 
-    // binds the data to the TextView in each row
+    // binds the data to the View in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         String currency_main = mData.get(position).getName();
         Double currency_value = mData.get(position).getValue();
-//        String currency_name = mData.get(position);
+//        holder.mCountryImage.setImageResource(R.drawable.ic_list_country_eu);
         holder.mCountryMain.setText(currency_main);
+        holder.mCountryCurrency.setText(Currency.getInstance(mData.get(position).getName()).getDisplayName());
         holder.mCurrencyValue.setText(currency_value.toString());
     }
 
