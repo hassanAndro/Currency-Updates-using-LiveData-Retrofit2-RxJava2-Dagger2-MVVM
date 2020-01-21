@@ -1,10 +1,12 @@
 package test.revolut.revolut.Currency;
 
 import android.content.Context;
+import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -46,12 +48,18 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView myTextView;
+        ImageView mCountryImage;
+        TextView mCountryMain;
+        TextView mCountryCurrency;
+        AppCompatEditText mCurrencyValue;
 
         ViewHolder(View itemView) {
             super(itemView);
-//            myTextView = itemView.findViewById(R.id.tvAnimalName);
-            itemView.setOnClickListener(this);
+            mCountryMain = itemView.findViewById(R.id.country_main);
+            mCountryCurrency = itemView.findViewById(R.id.country_currency);
+            mCurrencyValue = itemView.findViewById(R.id.currency_value);
+            mCountryImage = itemView.findViewById(R.id.country_flag);
+            mCurrencyValue.setOnClickListener(this);
         }
 
         @Override

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Revolut</string>
     <string name="label_rates">Rates</string>
+    <string name="loading_text">Fetching Currency Rates</string>
     <string name="network_error">No network connection.</string>
     <string name="errorString">Something went wrong, Please try again.</string>
 </resources>

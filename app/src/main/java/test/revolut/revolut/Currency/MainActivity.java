@@ -15,7 +15,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import test.revolut.revolut.MyApplication;
 import test.revolut.revolut.R;
 import test.revolut.revolut.utils.ApiResponse;
@@ -39,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        progressDialog = Constant.getProgressDialog(this, "Please wait...");
+        progressDialog = Constant.getProgressDialog(this, getString(R.string.loading_text));
 
         ButterKnife.bind(this);
         ((MyApplication) getApplication()).getAppComponent().doInjection(this);

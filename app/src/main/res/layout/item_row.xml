@@ -21,15 +21,13 @@
             android:id="@+id/country_main"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="USD"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/country_currency"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="US Dollar" />
+            android:layout_marginTop="5dp" />
 
     </LinearLayout>
 
@@ -42,7 +40,6 @@
         android:id="@+id/currency_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="right"
-        android:text="" />
+        android:gravity="right" />
 
 </LinearLayout>
