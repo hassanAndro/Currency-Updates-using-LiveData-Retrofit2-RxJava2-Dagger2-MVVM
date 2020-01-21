@@ -3,13 +3,13 @@
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="20sp">
+    android:orientation="vertical">
 
     <TextView
+        android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"
+        android:layout_marginLeft="60sp"
         android:text="@string/label_rates"
         android:textSize="20sp"
         android:textStyle="bold" />
@@ -18,7 +18,7 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="10sp" />
+        android:layout_marginTop="20sp" />
 
 
 </LinearLayout>

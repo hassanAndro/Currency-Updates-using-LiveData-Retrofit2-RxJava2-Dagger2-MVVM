@@ -4,15 +4,16 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
-    android:padding="10dp">
+    android:padding="15dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/country_flag"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        app:civ_border_width="2dp"
-        app:civ_border_color="#FF000000"/>
+        app:civ_border_width="0dp"
+        android:layout_gravity="center"
+        app:civ_border_color="@color/white"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -23,15 +24,19 @@
 
         <TextView
             android:id="@+id/country_main"
+            android:textSize="16sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/country_currency"
+            android:text="Currency Name"
+            android:textSize="14sp"
+            android:textColor="@color/light_grey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp" />
+            android:layout_marginTop="2dp" />
 
     </LinearLayout>
 
@@ -42,6 +47,7 @@
 
     <android.support.v7.widget.AppCompatEditText
         android:layout_gravity="center"
+        android:textStyle="bold"
         android:id="@+id/currency_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
