@@ -9,20 +9,25 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.List;
+import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+import test.revolut.revolut.Currency.CurrencyModel.Data;
+import test.revolut.revolut.Currency.CurrencyModel.Rates;
 import test.revolut.revolut.R;
 
 public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRecyclerViewAdapter.ViewHolder> {
 
-    private List<String> mData;
+    private Rates mRates;
+    private ArrayList<Data> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    CurrencyRecyclerViewAdapter(Context context, List<String> data) {
+    CurrencyRecyclerViewAdapter(Context context, Rates mRates) {
         this.mInflater = LayoutInflater.from(context);
-        this.mData = data;
+        this.mRates = mRates;
+        this.mData = mRates.getData();
     }
 
     // inflates the row layout from xml when needed
@@ -35,8 +40,11 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-//        String animal = mData.get(position);
-//        holder.myTextView.setText(animal);
+        String currency_main = mData.get(position).getName();
+        Double currency_value = mData.get(position).getValue();
+//        String currency_name = mData.get(position);
+        holder.mCountryMain.setText(currency_main);
+        holder.mCurrencyValue.setText(currency_value.toString());
     }
 
     // total number of rows
@@ -48,7 +56,7 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ImageView mCountryImage;
+        CircleImageView mCountryImage;
         TextView mCountryMain;
         TextView mCountryCurrency;
         AppCompatEditText mCurrencyValue;
@@ -69,7 +77,7 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
     }
 
     // convenience method for getting data at click position
-    String getItem(int id) {
+    Data getItem(int id) {
         return mData.get(id);
     }
 

@@ -5,16 +5,25 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.text.TextUtils;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import test.revolut.revolut.Currency.CurrencyModel.CurrencyMainModel;
+import test.revolut.revolut.Currency.CurrencyModel.Data;
+import test.revolut.revolut.Currency.CurrencyModel.Rates;
 import test.revolut.revolut.MyApplication;
 import test.revolut.revolut.R;
 import test.revolut.revolut.utils.ApiResponse;
@@ -30,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
 
+    CurrencyRecyclerViewAdapter adapter;
+
     CurrencyViewModel viewModel;
 
     ProgressDialog progressDialog;
@@ -41,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         progressDialog = Constant.getProgressDialog(this, getString(R.string.loading_text));
 
         ButterKnife.bind(this);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         ((MyApplication) getApplication()).getAppComponent().doInjection(this);
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(CurrencyViewModel.class);
@@ -68,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
             case ERROR:
                 progressDialog.dismiss();
-                Toast.makeText(MainActivity.this,getResources().getString(R.string.errorString), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, getResources().getString(R.string.errorString), Toast.LENGTH_SHORT).show();
                 break;
 
             default:
@@ -77,13 +89,40 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*
-    * method to handle success response
-    * */
+     * method to handle success response
+     * */
     private void renderSuccessResponse(JsonElement response) {
         if (!response.isJsonNull()) {
-            Log.e("response=", response.toString());
+            Gson gson = new Gson();
+            CurrencyMainModel model = gson.fromJson(response, CurrencyMainModel.class);
+
+            ArrayList<Data> data = new ArrayList<Data>();
+            HashMap<String, Double> map = model.getResult();
+
+            for (Map.Entry<String, Double> entry : map.entrySet()) {
+                System.out.println(entry.getKey());
+                Data data_value = new Data();
+                data_value.setName(entry.getKey());
+                data_value.setValue(entry.getValue());
+                data.add(data_value);
+            }
+
+            Rates rates = new Rates();
+            if (!TextUtils.isEmpty(model.getBase())) {
+                rates.setBase(model.getBase());
+            } else {
+                rates.setBase("EUR");
+            }
+            if (data != null) {
+                rates.setData(data);
+            } else {
+                rates.setData(null);
+            }
+
+            adapter = new CurrencyRecyclerViewAdapter(this, rates);
+            mRecyclerView.setAdapter(adapter);
         } else {
-            Toast.makeText(MainActivity.this,getResources().getString(R.string.errorString), Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, getResources().getString(R.string.errorString), Toast.LENGTH_SHORT).show();
         }
     }
 }
