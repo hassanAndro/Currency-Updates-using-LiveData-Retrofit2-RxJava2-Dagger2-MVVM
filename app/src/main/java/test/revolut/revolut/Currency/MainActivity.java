@@ -1,6 +1,7 @@
 package test.revolut.revolut.Currency;
 
 import android.app.ProgressDialog;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -16,11 +18,15 @@ import com.google.gson.JsonElement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
 import test.revolut.revolut.Currency.CurrencyModel.CurrencyMainModel;
 import test.revolut.revolut.Currency.CurrencyModel.Data;
 import test.revolut.revolut.Currency.CurrencyModel.Rates;
@@ -39,11 +45,11 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
 
-    CurrencyRecyclerViewAdapter adapter;
+    private CurrencyRecyclerViewAdapter adapter;
 
-    CurrencyViewModel viewModel;
+    private CurrencyViewModel viewModel;
 
-    ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
      * method to handle response
      * */
     private void consumeResponse(ApiResponse apiResponse) {
-
         switch (apiResponse.status) {
 
             case LOADING:
