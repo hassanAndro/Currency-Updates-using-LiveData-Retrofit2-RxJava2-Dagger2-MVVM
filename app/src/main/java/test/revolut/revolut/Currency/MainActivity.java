@@ -105,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
             HashMap<String, Double> map = model.getResult();
 
             for (Map.Entry<String, Double> entry : map.entrySet()) {
-                System.out.println(entry.getKey());
                 Data data_value = new Data();
                 data_value.setName(entry.getKey());
                 data_value.setValue(entry.getValue());
@@ -123,9 +122,12 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 rates.setData(null);
             }
-
-            adapter = new CurrencyRecyclerViewAdapter(this, rates);
-            mRecyclerView.setAdapter(adapter);
+            if (adapter==null){
+                adapter = new CurrencyRecyclerViewAdapter(this, rates);
+                mRecyclerView.setAdapter(adapter);
+            }else {
+                adapter.update(rates);
+            }
         } else {
             Toast.makeText(MainActivity.this, getResources().getString(R.string.errorString), Toast.LENGTH_SHORT).show();
         }

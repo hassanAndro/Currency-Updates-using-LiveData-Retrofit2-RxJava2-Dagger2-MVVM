@@ -3,6 +3,7 @@ package test.revolut.revolut.Currency;
 import android.content.Context;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,12 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
         this.mContext = context;
     }
 
+    public void update(Rates mRates) {
+        mData.clear();
+        mData.addAll(mRates.getData());
+        notifyDataSetChanged();
+    }
+
     // inflates the row layout from xml when needed
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -53,7 +60,11 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
     // total number of rows
     @Override
     public int getItemCount() {
-        return mData.size();
+        if (mData != null) {
+            return mData.size();
+        } else {
+            return 0;
+        }
     }
 
 
