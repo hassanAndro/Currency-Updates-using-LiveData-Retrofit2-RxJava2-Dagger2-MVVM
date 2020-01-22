@@ -2,7 +2,7 @@ package test.revolut.revolut.Currency.CurrencyModel;
 
 public class Data {
     private String name;
-    private Double value;
+    private float value;
 
     public String getName() {
         return name;
@@ -12,11 +12,11 @@ public class Data {
         this.name = name;
     }
 
-    public Double getValue() {
+    public float getValue() {
         return value;
     }
 
-    public void setValue(Double value) {
+    public void setValue(float value) {
         this.value = value;
     }
 }

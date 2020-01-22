@@ -37,7 +37,7 @@ import test.revolut.revolut.utils.Constant;
 import test.revolut.revolut.utils.ViewModelFactory;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AdapterCallback {
 
     @Inject
     ViewModelFactory viewModelFactory;
@@ -45,26 +45,24 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
 
-    private CurrencyRecyclerViewAdapter adapter;
-
-    private CurrencyViewModel viewModel;
-
-    private ProgressDialog progressDialog;
+    private CurrencyRecyclerViewAdapter mAdapter;
+    private CurrencyViewModel mViewModel;
+    private ProgressDialog mProgressDialog;
+    private String baseCurrency = "EUR";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        progressDialog = Constant.getProgressDialog(this, getString(R.string.loading_text));
+        mProgressDialog = Constant.getProgressDialog(this, getString(R.string.loading_text));
 
         ButterKnife.bind(this);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         ((MyApplication) getApplication()).getAppComponent().doInjection(this);
 
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(CurrencyViewModel.class);
-
-        viewModel.currencyResponse().observe(this, this::consumeResponse);
-        viewModel.hitCurrencyApi();
+        mViewModel = ViewModelProviders.of(this, viewModelFactory).get(CurrencyViewModel.class);
+        mViewModel.currencyResponse().observe(this, this::consumeResponse);
+        mViewModel.hitCurrencyApi();
 
     }
 
@@ -75,16 +73,16 @@ public class MainActivity extends AppCompatActivity {
         switch (apiResponse.status) {
 
             case LOADING:
-                progressDialog.show();
+                mProgressDialog.show();
                 break;
 
             case SUCCESS:
-                progressDialog.dismiss();
+                mProgressDialog.dismiss();
                 renderSuccessResponse(apiResponse.data);
                 break;
 
             case ERROR:
-                progressDialog.dismiss();
+                mProgressDialog.dismiss();
                 Toast.makeText(MainActivity.this, getResources().getString(R.string.errorString), Toast.LENGTH_SHORT).show();
                 break;
 
@@ -102,9 +100,9 @@ public class MainActivity extends AppCompatActivity {
             CurrencyMainModel model = gson.fromJson(response, CurrencyMainModel.class);
 
             ArrayList<Data> data = new ArrayList<Data>();
-            HashMap<String, Double> map = model.getResult();
+            HashMap<String, Float> map = model.getResult();
 
-            for (Map.Entry<String, Double> entry : map.entrySet()) {
+            for (Map.Entry<String, Float> entry : map.entrySet()) {
                 Data data_value = new Data();
                 data_value.setName(entry.getKey());
                 data_value.setValue(entry.getValue());
@@ -112,24 +110,38 @@ public class MainActivity extends AppCompatActivity {
             }
 
             Rates rates = new Rates();
-            if (!TextUtils.isEmpty(model.getBase())) {
-                rates.setBase(model.getBase());
-            } else {
-                rates.setBase("EUR");
-            }
+//            if (!TextUtils.isEmpty(model.getBase())) {
+//                rates.setBase(model.getBase());
+//            }
+            Log.e("TAGx","newBaseCurrency using: "+baseCurrency);
+            rates.setBase(baseCurrency);
+
             if (data != null) {
                 rates.setData(data);
             } else {
                 rates.setData(null);
             }
-            if (adapter==null){
-                adapter = new CurrencyRecyclerViewAdapter(this, rates);
-                mRecyclerView.setAdapter(adapter);
-            }else {
-                adapter.update(rates);
+            if (mAdapter == null) {
+                mAdapter = new CurrencyRecyclerViewAdapter(this, rates, this);
+                mRecyclerView.setAdapter(mAdapter);
+            } else {
+                mAdapter.update(rates);
             }
         } else {
             Toast.makeText(MainActivity.this, getResources().getString(R.string.errorString), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void scrollToTop() {
+        if (mRecyclerView != null) {
+            mRecyclerView.smoothScrollToPosition(0);
+        }
+    }
+
+    @Override
+    public void selectedCurrency(String newBaseCurrency, float value) {
+        Log.e("TAGx","newBaseCurrency updated: "+newBaseCurrency);
+        baseCurrency = newBaseCurrency;
     }
 }

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import java.math.BigDecimal;
+
 
 public class Constant {
 
@@ -32,6 +34,10 @@ public class Constant {
             }
         }
         return false;
+    }
+
+    public static float round(float d, int decimalPlace) {
+        return BigDecimal.valueOf(d).setScale(decimalPlace, BigDecimal.ROUND_HALF_UP).floatValue();
     }
 
 }

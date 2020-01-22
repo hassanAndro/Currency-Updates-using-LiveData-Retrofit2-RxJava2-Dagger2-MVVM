@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:padding="15dp">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/country_flag"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        app:civ_border_width="0dp"
         android:layout_gravity="center"
-        app:civ_border_color="@color/white"/>
+        app:civ_border_color="@color/white"
+        app:civ_border_width="0dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -24,19 +23,19 @@
 
         <TextView
             android:id="@+id/country_main"
-            android:textSize="16sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/country_currency"
-            android:text="Currency Name"
-            android:textSize="14sp"
-            android:textColor="@color/light_grey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp" />
+            android:layout_marginTop="2dp"
+            android:text="Currency Name"
+            android:textColor="@color/light_grey"
+            android:textSize="14sp" />
 
     </LinearLayout>
 
@@ -46,11 +45,13 @@
         android:layout_weight="1" />
 
     <android.support.v7.widget.AppCompatEditText
-        android:layout_gravity="center"
-        android:textStyle="bold"
         android:id="@+id/currency_value"
+        android:inputType="numberDecimal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="right" />
+        android:layout_gravity="center"
+        android:gravity="right"
+        android:textStyle="bold" />
+
 
 </LinearLayout>

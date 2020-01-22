@@ -15,7 +15,7 @@ public class CurrencyMainModel {
     private String date;
     @SerializedName("rates")
     @Expose
-    private HashMap<String, Double> result;
+    private HashMap<String, Float> result;
 
     public String getBase() {
         return base;
@@ -33,11 +33,11 @@ public class CurrencyMainModel {
         this.date = date;
     }
 
-    public HashMap<String, Double> getResult() {
+    public HashMap<String, Float> getResult() {
         return result;
     }
 
-    public void setResult(HashMap<String, Double> result) {
+    public void setResult(HashMap<String, Float> result) {
         this.result = result;
     }
 }
