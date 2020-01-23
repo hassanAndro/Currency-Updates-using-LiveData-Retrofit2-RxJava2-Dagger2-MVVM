@@ -113,7 +113,8 @@ public class MainActivity extends AppCompatActivity implements AdapterCallback {
 
 
             if (data != null && data.size() > 0) {
-                rates.setData(data);
+                ArrayList<Data> mData = Constant.convertCurrency(data);
+                rates.setData(addBaseCurrencyOnTop(mData));
             } else {
                 rates.setData(null);
             }
@@ -128,11 +129,14 @@ public class MainActivity extends AppCompatActivity implements AdapterCallback {
         }
     }
 
-    public Data addDataCurrencies(String name, float value) {
-        Data data = new Data();
-        data.setName(name);
-        data.setValue(value);
-        return data;
+    public ArrayList<Data> addBaseCurrencyOnTop(ArrayList<Data> mData) {
+        if (mData != null && mData.size() > 0) {
+            Data d = new Data();
+            d.setName(Constant.BASE_CURRENCY_SELECTED);
+            d.setValue(Constant.mInputValue);
+            mData.add(0, d);
+        }
+        return mData;
     }
 
     @Override

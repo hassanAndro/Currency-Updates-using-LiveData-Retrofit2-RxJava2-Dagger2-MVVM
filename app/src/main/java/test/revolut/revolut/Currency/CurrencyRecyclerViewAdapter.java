@@ -4,9 +4,11 @@ import android.content.Context;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.Selection;
+import android.text.Spanned;
 import android.text.TextWatcher;
-import android.util.Log;
+import android.text.method.DigitsKeyListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,23 +31,38 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
     private LayoutInflater mInflater;
     private Context mContext;
     private AdapterCallback mAdapterCallback;
+    private ViewHolder mViewHolder;
 
     // data is passed into the constructor
     CurrencyRecyclerViewAdapter(Context context, Rates mRates, AdapterCallback mAdapterCallback) {
         this.mInflater = LayoutInflater.from(context);
         this.mAdapterCallback = mAdapterCallback;
         this.mRates = mRates;
-//        this.mData = convertCurrency(mRates.getData());
         this.mData = mRates.getData();
-        addBaseCurrencyOnTop(mRates);
         this.mContext = context;
+    }
+
+    @Override
+    public int getItemCount() {
+        return (null != mData ? mData.size() : 0);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     // inflates the row layout from xml when needed
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.item_row, parent, false);
-        return new ViewHolder(view);
+        mViewHolder = new ViewHolder(view);
+        return mViewHolder;
     }
 
     // binds the data to the View in each row
@@ -63,7 +80,6 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
         } else {
             holder.mCurrencyValue.setText("");
         }
-
 
         holder.mCurrencyValue.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -99,24 +115,10 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
                     } else {
                         Constant.mInputValue = 0;
                     }
-//                    if (mAdapterCallback != null) {
-//                        mAdapterCallback.selectedCurrency(mData.get(position).getName());
-//                    }
                 }
             }
         });
     }
-
-    // total number of rows
-    @Override
-    public int getItemCount() {
-        if (mData != null) {
-            return mData.size();
-        } else {
-            return 0;
-        }
-    }
-
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -138,23 +140,7 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
         if (mRates != null) {
             mData.clear();
             mData.addAll(mRates.getData());
-            addBaseCurrencyOnTop(mRates);
             notifyDataSetChanged();
-        }
-    }
-
-    public void addBaseCurrencyOnTop(Rates mRates) {
-        if (mRates != null) {
-            if (mRates.getData() != null) {
-                if (mData != null && mData.size() > 0) {
-                    Data d = new Data();
-                    d.setName(mRates.getBase());
-                    d.setValue(Constant.mInputValue);
-                    mData.add(0, d);
-                    notifyItemInserted(0);
-                }
-
-            }
         }
     }
 

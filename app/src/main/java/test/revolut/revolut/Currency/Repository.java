@@ -21,7 +21,6 @@ public class Repository {
      * method to call Currency api
      * */
     public Observable<JsonElement> executeCurrencyApi(String base) {
-        Log.e("ascas","base: "+base);
         return apiCallInterface.CurrencyApi(Constant.BASE_CURRENCY_SELECTED);
     }
 
