@@ -1,9 +1,12 @@
 package test.revolut.revolut.Currency;
 
+import android.util.Log;
+
 import com.google.gson.JsonElement;
 
 import io.reactivex.Observable;
 import test.revolut.revolut.utils.ApiCallInterface;
+import test.revolut.revolut.utils.Constant;
 
 
 public class Repository {
@@ -17,8 +20,9 @@ public class Repository {
     /*
      * method to call Currency api
      * */
-    public Observable<JsonElement> executeCurrencyApi() {
-        return apiCallInterface.CurrencyApi();
+    public Observable<JsonElement> executeCurrencyApi(String base) {
+        Log.e("ascas","base: "+base);
+        return apiCallInterface.CurrencyApi(Constant.BASE_CURRENCY_SELECTED);
     }
 
 }

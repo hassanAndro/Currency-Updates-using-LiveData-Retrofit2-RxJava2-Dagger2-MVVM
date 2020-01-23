@@ -28,8 +28,6 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
     private ArrayList<Data> mData;
     private LayoutInflater mInflater;
     private Context mContext;
-    private float mInputValue = 0;
-    private int mCursorPositon = 0;
     private AdapterCallback mAdapterCallback;
 
     // data is passed into the constructor
@@ -66,9 +64,6 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
             holder.mCurrencyValue.setText("");
         }
 
-        if (position == 0) {
-            holder.mCurrencyValue.setSelection(mCursorPositon);
-        }
 
         holder.mCurrencyValue.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -77,11 +72,10 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
                     if (position != 0) {
                         if (mAdapterCallback != null) {
                             mAdapterCallback.scrollToTop();
-                            mAdapterCallback.selectedCurrency(mData.get(position).getName(), mData.get(position).getValue());
+                            mAdapterCallback.selectedCurrency(mData.get(position).getName());
                         }
-                        mInputValue = mData.get(position).getValue();
-                        mCursorPositon = holder.mCurrencyValue.getSelectionStart();
-                        swapeItem(position, 0);
+                        Constant.mInputValue = mData.get(position).getValue();
+                        swapItem(position, 0);
                     }
                 }
             }
@@ -101,13 +95,13 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
             public void afterTextChanged(Editable s) {
                 if (position == 0) {
                     if (s != null && s.length() > 0) {
-                        mInputValue = Float.valueOf(s.toString());
+                        Constant.mInputValue = Float.valueOf(s.toString());
                     } else {
-                        mInputValue = 0;
+                        Constant.mInputValue = 0;
                     }
-                    if (mAdapterCallback != null) {
-                        mAdapterCallback.selectedCurrency(mData.get(position).getName(), mData.get(position).getValue());
-                    }
+//                    if (mAdapterCallback != null) {
+//                        mAdapterCallback.selectedCurrency(mData.get(position).getName());
+//                    }
                 }
             }
         });
@@ -155,7 +149,7 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
                 if (mData != null && mData.size() > 0) {
                     Data d = new Data();
                     d.setName(mRates.getBase());
-                    d.setValue(mInputValue);
+                    d.setValue(Constant.mInputValue);
                     mData.add(0, d);
                     notifyItemInserted(0);
                 }
@@ -164,9 +158,10 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
         }
     }
 
-    public void swapeItem(int fromPosition, int toPosition) {
+    public void swapItem(int fromPosition, int toPosition) {
         Collections.swap(mData, fromPosition, toPosition);
         notifyItemMoved(fromPosition, toPosition);
         notifyDataSetChanged();
+
     }
 }

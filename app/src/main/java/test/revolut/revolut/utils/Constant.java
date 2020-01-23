@@ -7,15 +7,32 @@ import android.net.NetworkInfo;
 import android.util.Log;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+
+import test.revolut.revolut.Currency.CurrencyModel.Data;
 
 
 public class Constant {
+
+    public static float mInputValue = 1;
+    public static String BASE_CURRENCY_SELECTED = "EUR";
 
     public static ProgressDialog getProgressDialog(Context context, String msg) {
         ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setMessage(msg);
         progressDialog.setCancelable(false);
         return progressDialog;
+    }
+
+    public static ArrayList<Data> convertCurrency(ArrayList<Data> arrayList) {
+        ArrayList<Data> dataArrayList = new ArrayList<>();
+        for (int i = 0; i <= arrayList.size() - 1; i++) {
+            Data d = new Data();
+            d.setName(arrayList.get(i).getName());
+            d.setValue(arrayList.get(i).getValue() * mInputValue);
+            dataArrayList.add(d);
+        }
+        return dataArrayList;
     }
 
 

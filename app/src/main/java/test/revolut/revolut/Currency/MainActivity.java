@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -48,8 +49,6 @@ public class MainActivity extends AppCompatActivity implements AdapterCallback {
     private CurrencyRecyclerViewAdapter mAdapter;
     private CurrencyViewModel mViewModel;
     private ProgressDialog mProgressDialog;
-    private String mBaseCurrency = "";
-    private float mBaseValue = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -102,29 +101,18 @@ public class MainActivity extends AppCompatActivity implements AdapterCallback {
 
             ArrayList<Data> data = new ArrayList<Data>();
             HashMap<String, Float> map = model.getResult();
-            Data d;
             for (Map.Entry<String, Float> entry : map.entrySet()) {
-                if (!TextUtils.isEmpty(mBaseCurrency)) {
-                    if (mBaseCurrency.toLowerCase().equals(entry.getKey().toLowerCase())) {
-                        d = addDataCurrencies(model.getBase(), 0);
-                    } else {
-                        d = addDataCurrencies(entry.getKey(), entry.getValue());
-                    }
-                } else {
-                    d = addDataCurrencies(entry.getKey(), entry.getValue());
-                }
-                data.add(d);
+                Data data_value = new Data();
+                data_value.setName(entry.getKey());
+                data_value.setValue(entry.getValue());
+                data.add(data_value);
             }
 
             Rates rates = new Rates();
-            if (TextUtils.isEmpty(mBaseCurrency)) {
-                mBaseCurrency = model.getBase();
-            }
-            rates.setBase(mBaseCurrency);
+            rates.setBase(Constant.BASE_CURRENCY_SELECTED);
 
 
             if (data != null && data.size() > 0) {
-
                 rates.setData(data);
             } else {
                 rates.setData(null);
@@ -147,17 +135,6 @@ public class MainActivity extends AppCompatActivity implements AdapterCallback {
         return data;
     }
 
-    public ArrayList<Data> convertCurrency(ArrayList<Data> arrayList) {
-        ArrayList<Data> dataArrayList = new ArrayList<>();
-        for (int i = 0; i <= arrayList.size() - 1; i++) {
-            Data d = new Data();
-            d.setName(arrayList.get(i).getName());
-            d.setValue(arrayList.get(i).getValue() * mBaseValue);
-            dataArrayList.add(d);
-        }
-        return dataArrayList;
-    }
-
     @Override
     public void scrollToTop() {
         if (mRecyclerView != null) {
@@ -166,8 +143,7 @@ public class MainActivity extends AppCompatActivity implements AdapterCallback {
     }
 
     @Override
-    public void selectedCurrency(String newBaseCurrency, float value) {
-        mBaseCurrency = newBaseCurrency;
-        mBaseValue = value;
+    public void selectedCurrency(String newBaseCurrency) {
+        Constant.BASE_CURRENCY_SELECTED = newBaseCurrency;
     }
 }

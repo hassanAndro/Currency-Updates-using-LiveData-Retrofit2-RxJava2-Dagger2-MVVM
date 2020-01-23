@@ -2,13 +2,16 @@ package test.revolut.revolut.Currency;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import test.revolut.revolut.utils.ApiResponse;
+import test.revolut.revolut.utils.Constant;
 
 
 public class CurrencyViewModel extends ViewModel {
@@ -31,16 +34,24 @@ public class CurrencyViewModel extends ViewModel {
      * */
     public void hitCurrencyApi() {
 
-        disposables.add(repository.executeCurrencyApi()
-                .subscribeOn(Schedulers.io())
-                .delay(1000, TimeUnit.MILLISECONDS)
-                .repeat()
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe((d) -> responseLiveData.setValue(ApiResponse.loading()))
-                .subscribe(
-                        result -> responseLiveData.setValue(ApiResponse.success(result)),
-                        throwable -> responseLiveData.setValue(ApiResponse.error(throwable))
-                ));
+        disposables.add(
+                Observable
+                        .defer(() -> Observable.just(repository.executeCurrencyApi(Constant.BASE_CURRENCY_SELECTED)))
+//                Repeat After every second
+                        .delay(1000, TimeUnit.MILLISECONDS)
+                        .repeat()
+//                Repeat After every second When previous call is completed
+//                        .repeatWhen(completed -> completed.delay(1, TimeUnit.SECONDS))
+                        .flatMap(user -> repository.executeCurrencyApi(Constant.BASE_CURRENCY_SELECTED))
+                        .repeatWhen(done -> done.delay(1, TimeUnit.SECONDS))
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .doOnSubscribe((d) -> responseLiveData.setValue(ApiResponse.loading()))
+                        .subscribe(
+                                result -> responseLiveData.setValue(ApiResponse.success(result)),
+                                throwable -> responseLiveData.setValue(ApiResponse.error(throwable))
+                        )
+        );
 
     }
 
