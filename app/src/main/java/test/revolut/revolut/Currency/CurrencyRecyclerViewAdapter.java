@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.Selection;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,15 +28,17 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
     private ArrayList<Data> mData;
     private LayoutInflater mInflater;
     private Context mContext;
-    float mInputValue = 1;
-    AdapterCallback mAdapterCallback;
+    private float mInputValue = 0;
+    private int mCursorPositon = 0;
+    private AdapterCallback mAdapterCallback;
 
     // data is passed into the constructor
     CurrencyRecyclerViewAdapter(Context context, Rates mRates, AdapterCallback mAdapterCallback) {
         this.mInflater = LayoutInflater.from(context);
         this.mAdapterCallback = mAdapterCallback;
         this.mRates = mRates;
-        this.mData = convertCurrency(mRates.getData());
+//        this.mData = convertCurrency(mRates.getData());
+        this.mData = mRates.getData();
         addBaseCurrencyOnTop(mRates);
         this.mContext = context;
     }
@@ -50,21 +53,35 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
     // binds the data to the View in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+
         String currency_main = mData.get(position).getName();
         float currency_value = mData.get(position).getValue();
 //        holder.mCountryImage.setImageResource(R.drawable.ic_list_country_eu);
+        holder.mCurrencyValue.setOnClickListener(null);
         holder.mCountryMain.setText(currency_main);
         holder.mCountryCurrency.setText(Currency.getInstance(mData.get(position).getName()).getDisplayName());
-        holder.mCurrencyValue.setText(Float.toString(Constant.round(currency_value, 2)));
+        if (currency_value != 0) {
+            holder.mCurrencyValue.setText(Float.toString(Constant.round(currency_value, 2)));
+        } else {
+            holder.mCurrencyValue.setText("");
+        }
 
-        holder.mCurrencyValue.setOnClickListener(new View.OnClickListener() {
+        if (position == 0) {
+            holder.mCurrencyValue.setSelection(mCursorPositon);
+        }
+
+        holder.mCurrencyValue.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onClick(View v) {
-                if (position != 0) {
-                    swapeItem(position, 0);
-                    if (mAdapterCallback != null) {
-                        mAdapterCallback.scrollToTop();
-                        mAdapterCallback.selectedCurrency(mData.get(position).getName(), mData.get(position).getValue());
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    if (position != 0) {
+                        if (mAdapterCallback != null) {
+                            mAdapterCallback.scrollToTop();
+                            mAdapterCallback.selectedCurrency(mData.get(position).getName(), mData.get(position).getValue());
+                        }
+                        mInputValue = mData.get(position).getValue();
+                        mCursorPositon = holder.mCurrencyValue.getSelectionStart();
+                        swapeItem(position, 0);
                     }
                 }
             }
@@ -82,8 +99,15 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (s != null && s.length() > 0 && s.charAt(s.length() - 1) == ' ') {
-                    mInputValue = Float.valueOf(s.toString());
+                if (position == 0) {
+                    if (s != null && s.length() > 0) {
+                        mInputValue = Float.valueOf(s.toString());
+                    } else {
+                        mInputValue = 0;
+                    }
+                    if (mAdapterCallback != null) {
+                        mAdapterCallback.selectedCurrency(mData.get(position).getName(), mData.get(position).getValue());
+                    }
                 }
             }
         });
@@ -119,21 +143,10 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
     public void update(Rates mRates) {
         if (mRates != null) {
             mData.clear();
-            mData.addAll(convertCurrency(mRates.getData()));
+            mData.addAll(mRates.getData());
             addBaseCurrencyOnTop(mRates);
             notifyDataSetChanged();
         }
-    }
-
-    public ArrayList<Data> convertCurrency(ArrayList<Data> arrayList) {
-        ArrayList<Data> dataArrayList = new ArrayList<>();
-        for (int i = 0; i <= arrayList.size() - 1; i++) {
-            Data d = new Data();
-            d.setName(arrayList.get(i).getName());
-            d.setValue(arrayList.get(i).getValue() * mInputValue);
-            dataArrayList.add(d);
-        }
-        return dataArrayList;
     }
 
     public void addBaseCurrencyOnTop(Rates mRates) {
@@ -141,7 +154,6 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
             if (mRates.getData() != null) {
                 if (mData != null && mData.size() > 0) {
                     Data d = new Data();
-                    Log.e("TAGx","inside: "+mRates.getBase());
                     d.setName(mRates.getBase());
                     d.setValue(mInputValue);
                     mData.add(0, d);
