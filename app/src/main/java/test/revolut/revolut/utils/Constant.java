@@ -63,11 +63,22 @@ public class Constant {
     }
 
     public static String ReplaceIfString(String str) {
-
         if (str.contains(",")) {
             return str.replace(",", "");
         } else {
             return str;
         }
+    }
+
+    public static Boolean isNumber(String s) {
+        Boolean tag;
+
+        if (Character.isLetterOrDigit(s.charAt(0))) {
+            tag = true;
+        } else {
+            tag = false;
+        }
+
+        return tag;
     }
 }

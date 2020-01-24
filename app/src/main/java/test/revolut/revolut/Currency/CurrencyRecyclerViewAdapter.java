@@ -91,10 +91,12 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
             @Override
             public void afterTextChanged(Editable s) {
 
+                double value = 0.00;
                 if (position == 0) {
-                    double value = 0.00;
                     if (s != null && s.length() > 0) {
-                        value = Double.valueOf(Double.valueOf(Constant.ReplaceIfString(s.toString())));
+                        if (Constant.isNumber(s.toString())) {
+                            value = Double.valueOf(Double.valueOf(Constant.ReplaceIfString(s.toString())));
+                        }
                     }
                     if (mAdapterCallback != null) {
                         mAdapterCallback.selectedCurrency(mData.get(position).getName(),
@@ -102,9 +104,13 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
                     }
                 }
                 if (!TextUtils.isEmpty(s.toString())) {
-                    mData.get(position).setValue(Double.valueOf(Constant.ReplaceIfString(s.toString())));
+                    if (Constant.isNumber(s.toString())) {
+                        mData.get(position).setValue(Double.valueOf(Constant.ReplaceIfString(s.toString())));
+                    } else {
+                        mData.get(position).setValue(value);
+                    }
                 } else {
-                    mData.get(position).setValue(0.00);
+                    mData.get(position).setValue(value);
                 }
                 holder.mCurrencyValue.setSelection(holder.mCurrencyValue.getSelectionStart());
 
@@ -180,7 +186,7 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
     public void notifyArray() {
         ArrayList<ArrayData> d = new ArrayList<>();
         for (int i = 0; i <= mData.size() - 1; i++) {
-            if (i!=0){
+            if (i != 0) {
                 ArrayData arrayData = new ArrayData();
                 arrayData.setName(mData.get(i).getName());
                 arrayData.setPosition(i);
