@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.widget.TextView;
 
 import com.mynameismidori.currencypicker.ExtendedCurrency;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
+import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import test.revolut.revolut.Currency.CurrencyModel.Data;
@@ -144,17 +147,17 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
 
     public void update(Rates mRates) {
         if (mRates != null) {
-//            for (int i = 0; i <= mData.size() - 1; i++) {
-//                for (int j = 0; j <= mRates.getData().size() - 1; j++) {
-//                    if (mData.get(i).getName().equals(mRates.getData().get(j).getName())) {
-//                        Collections.swap(mRates.getData(), j, i);
-//
-//                    }
-//                }
-//            }
-            mData.clear();
-            mData.addAll(mRates.getData());
-            notifyDataSetChanged();
+            if (mRates != null) {
+                if (mRates.getData() != null && mRates.getData().size() > 0) {
+                    for (int i = 0; i <= mData.size() - 1; i++) {
+                        if (i != 0) {
+                            mData.get(i).setName(mRates.getData().get(i).getName());
+                            mData.get(i).setValue(mRates.getData().get(i).getValue());
+                            notifyItemChanged(i);
+                        }
+                    }
+                }
+            }
         }
     }
 

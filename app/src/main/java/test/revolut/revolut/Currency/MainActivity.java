@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -117,6 +118,11 @@ public class MainActivity extends AppCompatActivity implements AdapterCallback {
                 rates.setData(addBaseCurrencyOnTop(mData));
             } else {
                 rates.setData(null);
+            }
+
+            RecyclerView.ItemAnimator animator = mRecyclerView.getItemAnimator();
+            if (animator instanceof SimpleItemAnimator) {
+                ((SimpleItemAnimator) animator).setSupportsChangeAnimations(false);
             }
             if (mAdapter == null) {
                 mAdapter = new CurrencyRecyclerViewAdapter(this, rates, this);
