@@ -4,19 +4,19 @@ import android.content.Context;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
-import android.text.InputFilter;
-import android.text.Selection;
-import android.text.Spanned;
 import android.text.TextWatcher;
-import android.text.method.DigitsKeyListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.mynameismidori.currencypicker.ExtendedCurrency;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Currency;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import test.revolut.revolut.Currency.CurrencyModel.Data;
@@ -32,6 +32,7 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
     private Context mContext;
     private AdapterCallback mAdapterCallback;
     private ViewHolder mViewHolder;
+    private List<ExtendedCurrency> mCurrencyDetails = ExtendedCurrency.getAllCurrencies();
 
     // data is passed into the constructor
     CurrencyRecyclerViewAdapter(Context context, Rates mRates, AdapterCallback mAdapterCallback) {
@@ -71,7 +72,12 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
 
         String currency_main = mData.get(position).getName();
         float currency_value = mData.get(position).getValue();
-//        holder.mCountryImage.setImageResource(R.drawable.ic_list_country_eu);
+        int FlagId = FlagId(currency_main);
+        if (FlagId != 0) {
+            holder.mCountryImage.setImageResource(FlagId);
+        } else {
+            holder.mCountryImage.setImageResource(R.drawable.ic_launcher_background);
+        }
         holder.mCurrencyValue.setOnClickListener(null);
         holder.mCountryMain.setText(currency_main);
         holder.mCountryCurrency.setText(Currency.getInstance(mData.get(position).getName()).getDisplayName());
@@ -138,6 +144,14 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
 
     public void update(Rates mRates) {
         if (mRates != null) {
+//            for (int i = 0; i <= mData.size() - 1; i++) {
+//                for (int j = 0; j <= mRates.getData().size() - 1; j++) {
+//                    if (mData.get(i).getName().equals(mRates.getData().get(j).getName())) {
+//                        Collections.swap(mRates.getData(), j, i);
+//
+//                    }
+//                }
+//            }
             mData.clear();
             mData.addAll(mRates.getData());
             notifyDataSetChanged();
@@ -149,5 +163,18 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
         notifyItemMoved(fromPosition, toPosition);
         notifyDataSetChanged();
 
+    }
+
+    public int FlagId(String currencyCode) {
+        int id = 0;
+        if (mCurrencyDetails != null) {
+            for (int i = 0; i <= mCurrencyDetails.size() - 1; i++) {
+                ExtendedCurrency c = mCurrencyDetails.get(i);
+                if (c.getCode().toLowerCase().equals(currencyCode.toLowerCase())) {
+                    id = c.getFlag();
+                }
+            }
+        }
+        return id;
     }
 }
