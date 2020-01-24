@@ -6,12 +6,9 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
 import android.widget.TextView;
 
 import com.mynameismidori.currencypicker.ExtendedCurrency;
@@ -20,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
-import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import test.revolut.revolut.Currency.CurrencyModel.Data;
@@ -30,10 +26,8 @@ import test.revolut.revolut.utils.Constant;
 
 public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRecyclerViewAdapter.ViewHolder> {
 
-    private Rates mRates;
     private ArrayList<Data> mData;
     private LayoutInflater mInflater;
-    private Context mContext;
     private AdapterCallback mAdapterCallback;
     private ViewHolder mViewHolder;
     private List<ExtendedCurrency> mCurrencyDetails = ExtendedCurrency.getAllCurrencies();
@@ -42,9 +36,7 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
     CurrencyRecyclerViewAdapter(Context context, Rates mRates, AdapterCallback mAdapterCallback) {
         this.mInflater = LayoutInflater.from(context);
         this.mAdapterCallback = mAdapterCallback;
-        this.mRates = mRates;
         this.mData = mRates.getData();
-        this.mContext = context;
     }
 
     @Override
