@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -74,18 +75,53 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
     public void onBindViewHolder(ViewHolder holder, int position) {
 
         String currency_main = mData.get(position).getName();
-        float currency_value = mData.get(position).getValue();
+        double currency_value = mData.get(position).getValue();
         int FlagId = FlagId(currency_main);
         if (FlagId != 0) {
             holder.mCountryImage.setImageResource(FlagId);
         } else {
             holder.mCountryImage.setImageResource(R.drawable.ic_launcher_background);
         }
-        holder.mCurrencyValue.setOnClickListener(null);
         holder.mCountryMain.setText(currency_main);
         holder.mCountryCurrency.setText(Currency.getInstance(mData.get(position).getName()).getDisplayName());
+
+        holder.mCurrencyValue.removeTextChangedListener(holder.textWatcher);
+        holder.textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                if (position == 0) {
+                    double value = 0.00;
+                    if (s != null && s.length() > 0) {
+                        value = Double.valueOf(Double.valueOf(Constant.ReplaceIfString(s.toString())));
+                    }
+                    if (mAdapterCallback != null) {
+                        mAdapterCallback.selectedCurrency(mData.get(position).getName(),
+                                value);
+                    }
+                }
+                if (!TextUtils.isEmpty(s.toString())) {
+                    mData.get(position).setValue(Double.valueOf(Constant.ReplaceIfString(s.toString())));
+                } else {
+                    mData.get(position).setValue(0.00);
+                }
+                holder.mCurrencyValue.setSelection(holder.mCurrencyValue.getSelectionStart());
+
+            }
+        };
+
+        holder.mCurrencyValue.addTextChangedListener(holder.textWatcher);
+
         if (currency_value != 0) {
-            holder.mCurrencyValue.setText(Float.toString(Constant.round(currency_value, 2)));
+            holder.mCurrencyValue.setText(Constant.currencyFormat(String.valueOf(currency_value)));
         } else {
             holder.mCurrencyValue.setText("");
         }
@@ -97,32 +133,10 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
                     if (position != 0) {
                         if (mAdapterCallback != null) {
                             mAdapterCallback.scrollToTop();
-                            mAdapterCallback.selectedCurrency(mData.get(position).getName());
+                            mAdapterCallback.selectedCurrency(mData.get(position).getName(),
+                                    mData.get(position).getValue());
                         }
-                        Constant.mInputValue = mData.get(position).getValue();
                         swapItem(position, 0);
-                    }
-                }
-            }
-        });
-        holder.mCurrencyValue.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (position == 0) {
-                    if (s != null && s.length() > 0) {
-                        Constant.mInputValue = Float.valueOf(s.toString());
-                    } else {
-                        Constant.mInputValue = 0;
                     }
                 }
             }
@@ -135,6 +149,7 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
         TextView mCountryMain;
         TextView mCountryCurrency;
         AppCompatEditText mCurrencyValue;
+        TextWatcher textWatcher;
 
         ViewHolder(View itemView) {
             super(itemView);

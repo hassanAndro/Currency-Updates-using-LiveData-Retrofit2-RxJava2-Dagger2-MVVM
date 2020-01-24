@@ -7,6 +7,9 @@ import android.net.NetworkInfo;
 import android.util.Log;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import test.revolut.revolut.Currency.CurrencyModel.Data;
@@ -14,7 +17,7 @@ import test.revolut.revolut.Currency.CurrencyModel.Data;
 
 public class Constant {
 
-    public static float mInputValue = 1;
+    //    public static double mInputValue = 1;
     public static String BASE_CURRENCY_SELECTED = "EUR";
 
     public static ProgressDialog getProgressDialog(Context context, String msg) {
@@ -22,17 +25,6 @@ public class Constant {
         progressDialog.setMessage(msg);
         progressDialog.setCancelable(false);
         return progressDialog;
-    }
-
-    public static ArrayList<Data> convertCurrency(ArrayList<Data> arrayList) {
-        ArrayList<Data> dataArrayList = new ArrayList<>();
-        for (int i = 0; i <= arrayList.size() - 1; i++) {
-            Data d = new Data();
-            d.setName(arrayList.get(i).getName());
-            d.setValue(arrayList.get(i).getValue() * mInputValue);
-            dataArrayList.add(d);
-        }
-        return dataArrayList;
     }
 
 
@@ -54,8 +46,28 @@ public class Constant {
         return false;
     }
 
-    public static float round(float d, int decimalPlace) {
-        return BigDecimal.valueOf(d).setScale(decimalPlace, BigDecimal.ROUND_HALF_UP).floatValue();
+    public static ArrayList<Data> convertCurrency(ArrayList<Data> arrayList, double mInputValue) {
+        ArrayList<Data> dataArrayList = new ArrayList<>();
+        for (int i = 0; i <= arrayList.size() - 1; i++) {
+            Data d = new Data();
+            d.setName(arrayList.get(i).getName());
+            d.setValue(arrayList.get(i).getValue() * mInputValue);
+            dataArrayList.add(d);
+        }
+        return dataArrayList;
     }
 
+    public static String currencyFormat(String amount) {
+        DecimalFormat formatter = new DecimalFormat("#,###,###.##");
+        return formatter.format(Double.parseDouble(amount));
+    }
+
+    public static String ReplaceIfString(String str) {
+
+        if (str.contains(",")) {
+            return str.replace(",", "");
+        } else {
+            return str;
+        }
+    }
 }

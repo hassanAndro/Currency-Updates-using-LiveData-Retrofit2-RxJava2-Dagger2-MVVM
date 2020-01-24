@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements AdapterCallback {
     private CurrencyRecyclerViewAdapter mAdapter;
     private CurrencyViewModel mViewModel;
     private ProgressDialog mProgressDialog;
+    private double mInputValue = 1.00;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,7 +64,11 @@ public class MainActivity extends AppCompatActivity implements AdapterCallback {
 
         mViewModel = ViewModelProviders.of(this, viewModelFactory).get(CurrencyViewModel.class);
         mViewModel.currencyResponse().observe(this, this::consumeResponse);
-        mViewModel.hitCurrencyApi();
+        if (Constant.checkInternetConnection(this)) {
+            mViewModel.hitCurrencyApi();
+        } else {
+            Toast.makeText(MainActivity.this, getResources().getString(R.string.network_error), Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -114,17 +119,17 @@ public class MainActivity extends AppCompatActivity implements AdapterCallback {
 
 
             if (data != null && data.size() > 0) {
-                ArrayList<Data> mData = Constant.convertCurrency(data);
+                ArrayList<Data> mData = Constant.convertCurrency(data, mInputValue);
                 rates.setData(addBaseCurrencyOnTop(mData));
             } else {
                 rates.setData(null);
             }
 
-            RecyclerView.ItemAnimator animator = mRecyclerView.getItemAnimator();
-            if (animator instanceof SimpleItemAnimator) {
-                ((SimpleItemAnimator) animator).setSupportsChangeAnimations(false);
-            }
             if (mAdapter == null) {
+                RecyclerView.ItemAnimator animator = mRecyclerView.getItemAnimator();
+                if (animator instanceof SimpleItemAnimator) {
+                    ((SimpleItemAnimator) animator).setSupportsChangeAnimations(false);
+                }
                 mAdapter = new CurrencyRecyclerViewAdapter(this, rates, this);
                 mRecyclerView.setAdapter(mAdapter);
             } else {
@@ -139,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements AdapterCallback {
         if (mData != null && mData.size() > 0) {
             Data d = new Data();
             d.setName(Constant.BASE_CURRENCY_SELECTED);
-            d.setValue(Constant.mInputValue);
+            d.setValue(mInputValue);
             mData.add(0, d);
         }
         return mData;
@@ -153,7 +158,8 @@ public class MainActivity extends AppCompatActivity implements AdapterCallback {
     }
 
     @Override
-    public void selectedCurrency(String newBaseCurrency) {
+    public void selectedCurrency(String newBaseCurrency, double mInputValue) {
         Constant.BASE_CURRENCY_SELECTED = newBaseCurrency;
+        this.mInputValue = mInputValue;
     }
 }
