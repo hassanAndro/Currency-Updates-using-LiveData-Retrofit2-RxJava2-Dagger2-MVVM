@@ -18,6 +18,7 @@ import com.google.gson.JsonElement;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -29,6 +30,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
+import test.revolut.revolut.Currency.CurrencyModel.ArrayData;
 import test.revolut.revolut.Currency.CurrencyModel.CurrencyMainModel;
 import test.revolut.revolut.Currency.CurrencyModel.Data;
 import test.revolut.revolut.Currency.CurrencyModel.Rates;
@@ -50,7 +52,8 @@ public class MainActivity extends AppCompatActivity implements AdapterCallback {
     private CurrencyRecyclerViewAdapter mAdapter;
     private CurrencyViewModel mViewModel;
     private ProgressDialog mProgressDialog;
-    private double mInputValue = 1.00;
+    private double mInputValue = 100.00;
+    private ArrayList<ArrayData> mPreviousData = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -116,8 +119,6 @@ public class MainActivity extends AppCompatActivity implements AdapterCallback {
 
             Rates rates = new Rates();
             rates.setBase(Constant.BASE_CURRENCY_SELECTED);
-
-
             if (data != null && data.size() > 0) {
                 ArrayList<Data> mData = Constant.convertCurrency(data, mInputValue);
                 rates.setData(addBaseCurrencyOnTop(mData));
@@ -133,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements AdapterCallback {
                 mAdapter = new CurrencyRecyclerViewAdapter(this, rates, this);
                 mRecyclerView.setAdapter(mAdapter);
             } else {
+                rates.setData(orderOfArray(rates.getData()));
                 mAdapter.update(rates);
             }
         } else {
@@ -150,6 +152,21 @@ public class MainActivity extends AppCompatActivity implements AdapterCallback {
         return mData;
     }
 
+    public ArrayList<Data> orderOfArray(ArrayList<Data> data) {
+        if (mPreviousData.size() > 0) {
+            for (int i = 0; i <= data.size() - 1; i++) {
+                if (i == data.size() - 1) {
+                }
+                for (int j = 0; j <= mPreviousData.size() - 1; j++) {
+                    if (data.get(i).getName().toLowerCase().equals(mPreviousData.get(j).getName().toLowerCase())) {
+                        Collections.swap(data, i, mPreviousData.get(j).getPosition());
+                    }
+                }
+            }
+        }
+        return data;
+    }
+
     @Override
     public void scrollToTop() {
         if (mRecyclerView != null) {
@@ -161,5 +178,11 @@ public class MainActivity extends AppCompatActivity implements AdapterCallback {
     public void selectedCurrency(String newBaseCurrency, double mInputValue) {
         Constant.BASE_CURRENCY_SELECTED = newBaseCurrency;
         this.mInputValue = mInputValue;
+    }
+
+    @Override
+    public void swapCurrency(ArrayList<ArrayData> mData) {
+        this.mPreviousData = mData;
+
     }
 }

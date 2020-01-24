@@ -19,6 +19,7 @@ import java.util.Currency;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import test.revolut.revolut.Currency.CurrencyModel.ArrayData;
 import test.revolut.revolut.Currency.CurrencyModel.Data;
 import test.revolut.revolut.Currency.CurrencyModel.Rates;
 import test.revolut.revolut.R;
@@ -170,9 +171,25 @@ public class CurrencyRecyclerViewAdapter extends RecyclerView.Adapter<CurrencyRe
 
     public void swapItem(int fromPosition, int toPosition) {
         Collections.swap(mData, fromPosition, toPosition);
+        notifyArray();
         notifyItemMoved(fromPosition, toPosition);
         notifyDataSetChanged();
 
+    }
+
+    public void notifyArray() {
+        ArrayList<ArrayData> d = new ArrayList<>();
+        for (int i = 0; i <= mData.size() - 1; i++) {
+            if (i!=0){
+                ArrayData arrayData = new ArrayData();
+                arrayData.setName(mData.get(i).getName());
+                arrayData.setPosition(i);
+                d.add(arrayData);
+            }
+        }
+        if (mAdapterCallback != null) {
+            mAdapterCallback.swapCurrency(d);
+        }
     }
 
     public int FlagId(String currencyCode) {
